@@ -11,7 +11,11 @@ public class Unpacker {
 
         var packedString = in.nextLine();
 
-        System.out.println("Unpacked: " + unpack(packedString));
+        if (validate(packedString)) {
+            System.out.println("Unpacked: " + unpack(packedString));
+        } else {
+            System.out.println("Error - Invalid string");
+        }
     }
 
     public static String unpack(String _packed) {
@@ -63,5 +67,40 @@ public class Unpacker {
         }
 
         return 0;
+    }
+
+    public static Boolean validate(String sequence) {
+        if (sequence == null) {
+            return false;
+        }
+
+        var bracketsStack = new Stack<Character>();
+
+        for (var idx = 0; idx < sequence.length(); ++idx) {
+            var symbol = sequence.charAt(idx);
+
+            if (!(symbol >= 'A' && symbol <= 'Z') && !(symbol >= 'a' && symbol <= 'z') &&
+                !(symbol >= '0' && symbol <= '9') && !(symbol == '[' || symbol == ']')) {
+                return false;
+            }
+
+            if (Character.isDigit(symbol) && (idx == sequence.length() - 1 || sequence.charAt(idx + 1) != '[')) {
+                return false;
+            }
+
+            if (symbol == '[') {
+                bracketsStack.push(symbol);
+            }
+
+            if (symbol == ']') {
+                if (bracketsStack.isEmpty()) {
+                    return false;
+                }
+
+                bracketsStack.pop();
+            }
+        }
+
+        return bracketsStack.isEmpty();
     }
 }
